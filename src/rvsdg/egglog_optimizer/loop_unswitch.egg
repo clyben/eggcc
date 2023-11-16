@@ -1,0 +1,6 @@
+(rule ((= theta (Theta pred inputs outputs))
+		(= gamma (Gamma pred_g inputs_g outputs_g))
+		(Body-contains-Body theta gammas)
+		(is_inv_operand theta pred_g))
+		()
+)
