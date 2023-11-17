@@ -26,6 +26,7 @@ pub fn rvsdg_egglog_code() -> String {
         include_str!("gamma_rewrites.egg").to_string(),
         passthrough_optimize_rules(),
         include_str!("interval-analysis.egg").to_string(),
+        include_str!("rvsdg-logic.egg").to_string(),
         include_str!("loop-optimizations.egg").to_string(),
         include_str!("function_inline.egg").to_string(),
         include_str!("conditional_invariant_code_motion.egg").to_string(),
@@ -50,6 +51,10 @@ pub fn rvsdg_egglog_schedule() -> String {
         ; spine - we are working on this!), so we only run it a few times at the
         ; end to apply substitutions that the main optimizations find. It's
         ; interleaved with fast-analyses because it relies on reified vecs.
+        (seq (saturate fast-analyses) (saturate boundary-analyses) (saturate loop-inv-motion))
+
+        ; Right now subst don't saturate so make it fixed 
+        (repeat 1000 subst)
         (repeat 6 subst-beneath (saturate fast-analyses))
     )"
     .to_string()
