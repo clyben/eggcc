@@ -1,0 +1,58 @@
+(relation find_inv (Expr Expr))
+(relation arg_inv (Expr i64))
+(function is_inv (Expr Expr) bool :unextractable :merge (or old new))
+
+(rule ((find_inv body term)) ((set (is_inv body term) false)))
+
+
+(rule ((= loop (Loop id pred inputs outputs)) 
+        (= output-i (VecOperand-get outputs i)) ;; TODO
+        (= output-i (Arg id i)))
+    ((arg_inv loop i)) :ruleset fast-analyses)
+
+(rule ((= loop (Loop id pred inputs outputs))
+        (arg_inv loop i))
+    ((find_inv loop pred) (find_inv loop outputs)) :ruleset fast-analyses)
+
+
+(rule ((find_inv loop body) 
+        (= body (Loop id pred inputs outputs))) 
+    ((find_inv loop inputs)) :ruleset fast-analyses)
+
+
+(rule ((find_inv loop body) 
+        (= body (Switch id pred inputs outputs)))
+    ((find_inv loop pred) (find_inv loop inputs)) :ruleset fast-analyses)
+
+
+(rule ((find_inv loop evec)
+        (= ith (VecOperand-get evec i))) ;; TODO
+    ((find_inv loop ith)) :ruleset fast-analyses)
+
+
+(rule ((find_inv loop (Num id n))) 
+    ((set (is_inv loop (Num id n)) true)) :ruleset fast-analyses)
+
+
+(rule ((find_inv loop (Bool id b))) 
+    ((set (is_inv loop (Bool id b)) true)) :ruleset fast-analyses)
+
+
+(rule ((find_inv loop expr)
+        (= expr (PRINT op state)))
+    ((find_inv loop op) (find_inv loop state)))
+
+
+(rule ((find_inv_expr loop expr)
+        (= expr (Call str inputs)))
+    ((find_inv loop inputs)))
+
+;; terminal
+(rule ((find_inv loop operand)
+        (= operand (Arg id i))
+        (arg_inv loop i))
+    ((set (is_inv loop operand) true)) :ruleset fast-analyses)
+
+(rule ((find_inv loop operand)
+        (= operand (Project body i))) 
+    ((find_inv loop body)) :ruleset fast-analyses)
