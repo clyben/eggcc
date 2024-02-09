@@ -43,6 +43,7 @@ pub fn egglog_test(
             include_str!("type_analysis.egg"),
             include_str!("optimizations/constant_fold.egg"),
             include_str!("utility/assume.egg"),
+            include_str!("utility/util.egg"),
         ]
         .join("\n"),
         include_str!("schedule.egg"),

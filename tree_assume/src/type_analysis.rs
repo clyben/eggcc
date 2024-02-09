@@ -1,8 +1,13 @@
 #[cfg(test)]
-use crate::{ast::*, egglog_test, interpreter::Value, schema::{RcExpr, Type}};
+use crate::{
+    ast::*,
+    egglog_test,
+    interpreter::Value,
+    schema::{RcExpr, Type},
+};
 
 #[cfg(test)]
-fn type_test(inp: RcExpr, expected_ty : Type, arg: Value, expected_val: Value) -> crate::Result {
+fn type_test(inp: RcExpr, expected_ty: Type, arg: Value, expected_val: Value) -> crate::Result {
     let build = format!("{inp}");
     let check = format!("(check (HasType {inp} {expected_ty}))");
     egglog_test(
@@ -10,7 +15,7 @@ fn type_test(inp: RcExpr, expected_ty : Type, arg: Value, expected_val: Value) -
         &check,
         vec![inp.to_program(emptyt(), expected_ty)],
         arg,
-        expected_val
+        expected_val,
     )
 }
 
@@ -61,7 +66,15 @@ fn bops() -> crate::Result {
     let n = int(12);
     type_test(add(m.clone(), n.clone()), intt(), val_int(0), val_int(15))?;
     type_test(sub(m.clone(), n.clone()), intt(), val_int(0), val_int(-9))?;
-    type_test(mul(add(m.clone(), m.clone()), sub(add(n.clone(), n.clone()), m.clone())), intt(), val_int(0), val_int(126))
+    type_test(
+        mul(
+            add(m.clone(), m.clone()),
+            sub(add(n.clone(), n.clone()), m.clone()),
+        ),
+        intt(),
+        val_int(0),
+        val_int(126),
+    )
 }
 
 #[test]
